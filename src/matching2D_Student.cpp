@@ -19,7 +19,17 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
-        // ...
+         //convert to CV_32F
+        matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
+
+        if(descRef.type()!=CV_32F) {
+            descRef.convertTo(descRef, CV_32F);
+        }
+
+        if(descSource.type()!=CV_32F) {
+            descSource.convertTo(descSource, CV_32F);
+        }
+        cout << "FLANN matching" << endl;
     }
 
     // perform matching task

@@ -36,7 +36,7 @@ int main(int argc, const char *argv[])
     string imgFileType = ".png";
     int imgStartIndex = 0; // first file index to load (assumes Lidar and camera names have identical naming convention)
     int imgEndIndex = 18;   // last file index to load
-    int imgStepWidth = 1; 
+    int imgStepWidth = 1;  
     int imgFillWidth = 4;  // no. of digits which make up the file index (e.g. img-0001.png)
 
     // object detection
