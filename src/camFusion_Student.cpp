@@ -159,5 +159,63 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
 
 void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bbBestMatches, DataFrame &prevFrame, DataFrame &currFrame)
 {
-    // ...
+    std::multimap<int,int> _map {};
+
+    int maxPrevBoxId = 0;
+    
+    for (auto match : matches)
+    {
+        cv::KeyPoint prevKpt = prevFrame.keypoints[match.queryIdx];
+        cv::KeyPoint currKpt = currFrame.keypoints[match.trainIdx];
+
+        int prevBoxId;
+        int currBoxId;
+        
+        for(auto boundingBox : prevFrame.boundingBoxes)
+        {
+            if(boundingBox.roi.contains(prevKpt.pt))
+            {
+                prevBoxId = boundingBox.boxID;
+            }
+        }
+
+        for(auto boundingBox : currFrame.boundingBoxes)
+        {
+            if(boundingBox.roi.contains(currKpt.pt))
+            {
+                currBoxId = boundingBox.boxID;
+            }
+        }
+
+        _map.insert({currBoxId,prevBoxId});
+
+        maxPrevBoxId = std::max(maxPrevBoxId, prevBoxId);
+
+    }
+
+    vector<int> currFrameBoxIds {};
+
+    for (auto box : currFrame.boundingBoxes)
+    {
+        currFrameBoxIds.push_back(box.boxID);
+    }
+
+    for(int i : currFrameBoxIds)
+    {
+        auto range = _map.equal_range(i);
+
+        std::vector<int> counts(maxPrevBoxId + 1, 0);
+    
+
+    for (auto it = range.first; it != range.second; ++it) 
+    {
+        if (-1 != (*it).second) 
+        {
+            counts[(*it).second] += 1;
+        }
+    }
+
+    int modeIndex = std::distance(counts.begin(), std::max_element(counts.begin(), counts.end()));
+    bbBestMatches.insert({modeIndex, i});
+    }
 }

@@ -26,6 +26,9 @@ using namespace std;
 int main(int argc, const char *argv[])
 {
     /* INIT VARIABLES AND DATA STRUCTURES */
+    int numOfKpts;
+    std::vector<double> detectorTimes;
+    std::vector<double> descriptorTimes;
 
     // data location
     string dataPath = "../";
@@ -140,7 +143,7 @@ int main(int argc, const char *argv[])
         
         
         // REMOVE THIS LINE BEFORE PROCEEDING WITH THE FINAL PROJECT
-        continue; // skips directly to the next image without processing what comes beneath
+        //continue; // skips directly to the next image without processing what comes beneath
 
         /* DETECT IMAGE KEYPOINTS */
 
@@ -150,16 +153,37 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "SHITOMASI";
+        string detectorType = "FAST";
 
         if (detectorType.compare("SHITOMASI") == 0)
         {
-            detKeypointsShiTomasi(keypoints, imgGray, false);
+            detectorTimes = detKeypointsShiTomasi(keypoints, numOfKpts, imgGray, detectorTimes, false);
         }
-        else
+        else if (detectorType.compare("HARRIS") == 0) 
         {
-            //...
+            detectorTimes = detKeypointsHarris(keypoints, numOfKpts, imgGray, detectorTimes,false);
+        } 
+        
+        else if (detectorType.compare("FAST") == 0) 
+        {
+            detectorTimes = detKeypointsFast(keypoints, numOfKpts, imgGray, detectorTimes,false);
         }
+        else if (detectorType.compare("BRISK") == 0) 
+        {
+            detectorTimes = detKeypointsBrisk(keypoints, numOfKpts, imgGray, detectorTimes,false);
+        }
+        else if (detectorType.compare("ORB") == 0) 
+        {
+            detectorTimes = detKeypointsOrb(keypoints, numOfKpts, imgGray, detectorTimes,false);
+        }
+        else if (detectorType.compare("AKAZE") == 0) 
+        {
+            detectorTimes = detKeypointsAkaze(keypoints, numOfKpts, imgGray, detectorTimes,false);
+        }
+        else if (detectorType.compare("SIFT") == 0) 
+        {
+            detectorTimes = detKeypointsSift(keypoints, numOfKpts, imgGray, detectorTimes,false);
+        } 
 
         // optional : limit number of keypoints (helpful for debugging and learning)
         bool bLimitKpts = false;
@@ -184,7 +208,7 @@ int main(int argc, const char *argv[])
         /* EXTRACT KEYPOINT DESCRIPTORS */
 
         cv::Mat descriptors;
-        string descriptorType = "BRISK"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
+        string descriptorType = "ORB"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
 
         // push descriptors for current frame to end of data buffer
@@ -267,7 +291,7 @@ int main(int argc, const char *argv[])
                     computeTTCCamera((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints, currBB->kptMatches, sensorFrameRate, ttcCamera);
                     //// EOF STUDENT ASSIGNMENT
 
-                    bVis = true;
+                    bVis = false;
                     if (bVis)
                     {
                         cv::Mat visImg = (dataBuffer.end() - 1)->cameraImg.clone();
