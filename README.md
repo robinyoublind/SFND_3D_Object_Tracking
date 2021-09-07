@@ -1,4 +1,22 @@
 # Write Up
+#### FP.1 Match 3D Objects: 
+The matchBoundingBoxes function is implemented with std::multimap<int,int> which stores pairs of bounding box IDs. The number of matches in the multimap are counted and we find which pair of current and previos IDs have the most matches. 
+
+#### FP.2 Compute Lidar-based TTC:
+Here, we take the average of the x values of the previous and current frame's lidar points. The average of those is d0 and d1 respectivly. We then find the time delta which is 1 / framerate. Then we calculate the TTC using TTC = d1 * dt / (d0 - d1).
+
+#### FP.3 Associate Keypoint Correspondences with Bounding Boxes
+Here we loop through all keypoint matches and add the match to boundingBox if the keypoint is in the ROI.
+
+#### FP.4 Compute Camera-based TTC:
+Here we compute the camera TTC. This is done using the code already provided earlier in the section.It does this using the equation TTC = (-1.0 / frameRate) / (1 - medianDistRatio).
+
+#### FP.5 Performance Evaluation 1:
+The most aggregious TTC error (while using the best combination as determined in the midterm - FAST/ORB) is in frame 5 where theTTC for the camera jumped to 60 seconds, then returned to normal values in the next frame. This could be due to outliers in the keypoints or too large of a ROI as there seem to be several keypoints outside the car.Another example is in frame 2 using FAST|BRISK where the camera TTC is -14 seconds followed by 56 seconds. As far as the lidar TTC, there do not seem to be any significant outliers. It was consistantly around 13 seconds until the distance shrunk and the TTC was reduced to around 8 seconds. Since the average of the lidar points was taken, this might be avoiding outliers in the data that would be in ther eotherwise. 
+
+#### FP.6 Performance Evaluation 2
+Intially I tested the following combinations: ORB FAST, BRIEF FAST, BRISK FAST. For the first two, with the exception of a frame or two, the camera performed relativaly well. When BRISK was used, the camera performed poorly. Several frames had -inf or other negative values. So for the three combinations that were tested, HARRIS ORB was used in place of BRISK FAST.
+<img src="images/final camera spreadsheet.jpg" width="561" height="425" />
 
 
 # SFND 3D Object Tracking
