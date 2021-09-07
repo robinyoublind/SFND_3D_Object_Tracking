@@ -30,6 +30,15 @@ int main(int argc, const char *argv[])
     std::vector<double> detectorTimes;
     std::vector<double> descriptorTimes;
 
+    string detector;
+    string descriptor;
+    
+    cout << "Input Detector" << endl;
+    cin >> detector;
+    cout << "Input Descriptor" << endl;
+    cin >> descriptor;
+
+
     // data location
     string dataPath = "../";
 
@@ -75,7 +84,7 @@ int main(int argc, const char *argv[])
     double sensorFrameRate = 10.0 / imgStepWidth; // frames per second for Lidar and camera
     int dataBufferSize = 2;       // no. of images which are held in memory (ring buffer) at the same time
     vector<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
-    bool bVis = true;            // visualize results
+    bool bVis = false;            // visualize results
 
     /* MAIN LOOP OVER ALL IMAGES */
 
@@ -153,7 +162,7 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "FAST";
+        string detectorType = detector;
 
         if (detectorType.compare("SHITOMASI") == 0)
         {
@@ -208,7 +217,7 @@ int main(int argc, const char *argv[])
         /* EXTRACT KEYPOINT DESCRIPTORS */
 
         cv::Mat descriptors;
-        string descriptorType = "ORB"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
+        string descriptorType = descriptor; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
 
         // push descriptors for current frame to end of data buffer
