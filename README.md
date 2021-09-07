@@ -16,6 +16,7 @@ The most aggregious TTC error (while using the best combination as determined in
 
 #### FP.6 Performance Evaluation 2
 Intially I tested the following combinations: ORB FAST, BRIEF FAST, BRISK FAST. For the first two, with the exception of a frame or two, the camera performed relativaly well. When BRISK was used, the camera performed poorly. Several frames had -inf or other negative values. So for the three combinations that were tested, HARRIS ORB was used in place of BRISK FAST.
+
 <img src="images/final camera spreadsheet.jpg" width="561" height="425" />
 
 
