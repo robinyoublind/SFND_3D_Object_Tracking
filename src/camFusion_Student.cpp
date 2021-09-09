@@ -229,25 +229,63 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
     // d1 = distance (curr frame)
     // dt = time delta - 1/framerate
 
-    //take average x value of prev and current frame to get d0 and d1
-    double sumPrev;
+    //take median x value of prev and current frame to get d0 and d1
+
+    std::vector<float> lidarPointsPrevFiltered;
+    std::vector<float> lidarPointsCurrFiltered;
+
     for(auto point : lidarPointsPrev)
     {
-        sumPrev += point.x;
+        lidarPointsPrevFiltered.push_back(point.x);
     }
-    double d0 = sumPrev / lidarPointsPrev.size();
 
-    double sumCurr;
-    for(auto point : lidarPointsCurr)
+     for(auto point : lidarPointsCurr)
     {
-        sumCurr += point.x;
+        lidarPointsCurrFiltered.push_back(point.x);
     }
-    double d1 = sumCurr / lidarPointsCurr.size();
 
+    //sort points
+    std::sort(lidarPointsPrevFiltered.begin(), lidarPointsPrevFiltered.end());
+    std::sort(lidarPointsPrevFiltered.begin(), lidarPointsPrevFiltered.end());
+
+    //find median
+    float medianPrev = lidarPointsPrevFiltered[(lidarPointsPrevFiltered.size() / 2)];
+    float medianCurr = lidarPointsCurrFiltered[(lidarPointsCurrFiltered.size() / 2)];
+
+    int removedPrev = 0;
+    int removedCurr = 0;
+
+
+    //remove any points that are not withing 3% of median
+    std::vector<double> prev;
+    for(auto point : lidarPointsPrevFiltered)
+    {
+        if(point > 0.97*medianPrev && point <  1.03*medianPrev)
+        {
+           prev.push_back(point); 
+        }
+        else{ removedPrev++;}
+        
+    }
+    //for d0 we will use the closest of the filtered points
+    double d0 = *min_element(prev.begin(), prev.end());
+
+    std::vector<double> curr;
+    for(auto point : lidarPointsCurrFiltered)
+    {
+       if(point > 0.97*medianCurr && point < 1.03*medianCurr)
+        {
+           curr.push_back(point); 
+        }
+        else{removedCurr++;}
+    }
+    double d1 = *min_element(curr.begin(), curr.end());
+
+    cout << d0 << ", " << d1 << endl;
     //calculate TTC
     TTC = d1 * (1/ frameRate) / (d0 - d1);
 
-    cout << TTC << endl;
+    cout << removedPrev << ", " << removedCurr << endl;
 
 }
 
