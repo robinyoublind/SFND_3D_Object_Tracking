@@ -12,12 +12,12 @@ Here we loop through all keypoint matches and add the match to boundingBox if th
 Here we compute the camera TTC. This is done using the code already provided earlier in the section. It does this using the equation TTC = (-1.0 / frameRate) / (1 - medianDistRatio).
 
 #### FP.5 Performance Evaluation 1:
-The most aggregious TTC error (while using the best combination as determined in the midterm - FAST/ORB) is in frame 5 where theTTC for the camera jumped to 60 seconds, then returned to normal values in the next frame. This could be due to outliers in the keypoints or too large of a ROI as there seem to be several keypoints outside the car.Another example is in frame 2 using FAST|BRISK where the camera TTC is -14 seconds followed by 56 seconds. As far as the lidar TTC, there do not seem to be any significant outliers. It was consistantly around 13 seconds until the distance shrunk and the TTC was reduced to around 8 seconds. Since the average of the lidar points was taken, this might be avoiding outliers in the data that would be in ther eotherwise. 
+The highest TTC error (while using the best combination as determined in the midterm - FAST/ORB) is in frame 5 where theTTC for the camera jumped to 25 seconds, then returned to normal values in the next frame. This could be due to outliers in the keypoints or too large of a ROI as there seem to be several keypoints outside the car. Another example is in frame 4 using FAST|BRISK where the camera TTC is 43 seconds. As far as the lidar TTC, there do not seem to be any significant outliers. It was consistantly around 13 seconds until the distance shrunk and the TTC was reduced to around 8 seconds. Since the average of the lidar points was taken, this might be avoiding outliers in the data that would be in ther eotherwise. 
 
-#### FP.6 Performance Evaluation 2
-Intially I tested the following combinations: ORB FAST, BRIEF FAST, BRISK FAST. For the first two, with the exception of a frame or two, the camera performed relativaly well. When BRISK was used, the camera performed poorly. Several frames had -inf or other negative values. So for the three combinations that were tested, HARRIS ORB was used in place of BRISK FAST.
+#### FP.6 Performance Evaluation 2:
+The combinations of FAST|ORB, FAST|BRIEF, FAST | BRISK were tested. Around the 5th frame, the model tends to over esitmate the TTC. But by the next frame, it is back to normal. This can be seen when compared to the lidar TTC which remains consistent. This might be an error caused by too many keypoints.
 
-<img src="images/final camera spreadsheet.jpg" width="561" height="425" />
+<img src="images/final camera spreadsheet.jpg" width="569" height="417" />
 
 
 # SFND 3D Object Tracking
