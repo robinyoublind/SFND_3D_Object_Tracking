@@ -231,8 +231,8 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
 
     //take median x value of prev and current frame to get d0 and d1
 
-    std::vector<float> lidarPointsPrevFiltered;
-    std::vector<float> lidarPointsCurrFiltered;
+    std::vector<double> lidarPointsPrevFiltered;
+    std::vector<double> lidarPointsCurrFiltered;
 
     for(auto point : lidarPointsPrev)
     {
@@ -249,8 +249,8 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
     std::sort(lidarPointsPrevFiltered.begin(), lidarPointsPrevFiltered.end());
 
     //find median
-    float medianPrev = lidarPointsPrevFiltered[(lidarPointsPrevFiltered.size() / 2)];
-    float medianCurr = lidarPointsCurrFiltered[(lidarPointsCurrFiltered.size() / 2)];
+    double medianPrev = lidarPointsPrevFiltered[(lidarPointsPrevFiltered.size() / 2)];
+    double medianCurr = lidarPointsCurrFiltered[(lidarPointsCurrFiltered.size() / 2)];
 
     int removedPrev = 0;
     int removedCurr = 0;
@@ -258,28 +258,32 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
 
     //remove any points that are not withing 3% of median
     std::vector<double> prev;
+    double sumPrev = 0;
     for(auto point : lidarPointsPrevFiltered)
     {
         if(point > 0.97*medianPrev && point <  1.03*medianPrev)
         {
-           prev.push_back(point); 
+           prev.push_back(point);
+           sumPrev += point; 
         }
         else{ removedPrev++;}
         
     }
     //for d0 we will use the closest of the filtered points
-    double d0 = *min_element(prev.begin(), prev.end());
+    double d0 = sumPrev / prev.size();
 
     std::vector<double> curr;
+    double sumCurr = 0;
     for(auto point : lidarPointsCurrFiltered)
     {
        if(point > 0.97*medianCurr && point < 1.03*medianCurr)
         {
            curr.push_back(point); 
+           sumCurr += point;
         }
         else{removedCurr++;}
     }
-    double d1 = *min_element(curr.begin(), curr.end());
+    double d1 = sumCurr / curr.size();
 
     cout << d0 << ", " << d1 << endl;
     //calculate TTC
