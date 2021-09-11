@@ -3,7 +3,7 @@
 The matchBoundingBoxes function is implemented with std::multimap<int,int> which stores pairs of bounding box IDs. The number of matches in the multimap are counted and we find which pair of current and previos IDs have the most matches. 
 
 #### FP.2 Compute Lidar-based TTC:
-Here, we take the average of the x values of the previous and current frame's lidar points. The average of those is d0 and d1 respectivly. We then find the time delta which is 1 / framerate. Then we calculate the TTC using TTC = d1 * dt / (d0 - d1).
+Here, we take the average of the x values of the previous and current frame's lidar points. The average of those is d0 and d1 respectively. We then find the time delta which is 1 / framerate. Then we calculate the TTC using TTC = d1 * dt / (d0 - d1).
 
 #### FP.3 Associate Keypoint Correspondences with Bounding Boxes
 Here we loop through all keypoint matches and add the match to boundingBox if the keypoint is in the ROI.
@@ -12,10 +12,10 @@ Here we loop through all keypoint matches and add the match to boundingBox if th
 Here we compute the camera TTC. This is done using the code already provided earlier in the section. It does this using the equation TTC = (-1.0 / frameRate) / (1 - medianDistRatio).
 
 #### FP.5 Performance Evaluation 1:
-The highest TTC error (while using the best combination as determined in the midterm - FAST/ORB) is in frame 5 where theTTC for the camera jumped to 25 seconds, then returned to normal values in the next frame. This could be due to outliers in the keypoints or too large of a ROI as there seem to be several keypoints outside the car. Another example is in frame 4 using FAST|BRISK where the camera TTC is 43 seconds. As far as the lidar TTC, there do not seem to be any significant outliers. It was consistantly around 13 seconds until the distance shrunk and the TTC was reduced to around 8 seconds. Since the average of the lidar points was taken, this might be avoiding outliers in the data that would be in ther eotherwise. 
+ The only two frames where the lidar seemed a bit off were frames 3 and 4 where the TTC jumped to about 17s then 14.4s respectively. Comparing to the top down, this seemes to be a bit high as the distance is consistant with previous frmaes.Other than that, it was consistantly around 13 seconds until the distance shrunk and the TTC was reduced to around 8 seconds. Since the median of the lidar points was taken, this might be avoiding outliers in the data that would be in ther otherwise. 
 
 #### FP.6 Performance Evaluation 2:
-The combinations of FAST|ORB, FAST|BRIEF, FAST | BRISK were tested. Around the 5th frame, the model tends to over esitmate the TTC. But by the next frame, it is back to normal. This can be seen when compared to the lidar TTC which remains consistent. This might be an error caused by too many keypoints.
+The combinations of FAST|ORB, FAST|BRIEF, FAST | BRISK were tested. Around the 5th frame, the model tends to over esitmate the TTC. In the case of FAST | BRISK, the overestimation was severe at 60s. But by the next frame, it is back to normal. This can be seen when compared to the lidar TTC which remains consistent. This might be an error caused by too many keypoints.
 
 <img src="images/final camera spreadsheet.jpg" width="569" height="417" />
 

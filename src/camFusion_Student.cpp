@@ -138,13 +138,19 @@ void show3DObjects(std::vector<BoundingBox> &boundingBoxes, cv::Size worldSize, 
 // associate a given bounding box with the keypoints it contains
 void clusterKptMatchesWithROI(BoundingBox &boundingBox, std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPoint> &kptsCurr, std::vector<cv::DMatch> &kptMatches)
 {   
+    vector<double> distnaces;
     double avgDistance = 0.00;
     int numOfMatches = 0; 
     
-    //if the ROI contains our kepypoint, add the match distance to avg distance
-    for (auto match : kptMatches) {
-        if (boundingBox.roi.contains(kptsCurr[match.trainIdx].pt)) {
-            avgDistance += match.distance;
+    //if the ROI contains our kepypoint, add the euclidean distance to avg distance
+    for (auto &match : kptMatches) {
+        auto ptCurr = kptsCurr[match.trainIdx].pt;
+        auto ptPrev = kptsPrev[match.queryIdx].pt;
+        auto dist = cv::norm(ptPrev - ptCurr);
+
+        if (boundingBox.roi.contains(ptCurr)) {
+            distnaces.push_back(dist);
+            avgDistance += dist;
             numOfMatches ++;
         }
     }
@@ -155,16 +161,27 @@ void clusterKptMatchesWithROI(BoundingBox &boundingBox, std::vector<cv::KeyPoint
     }
 
     avgDistance /= numOfMatches;
-
+    std::sort(distnaces.begin(), distnaces.end());
+    auto medianDistnace = distnaces[distnaces.size() /2];
+    auto count = 0;
+    
     for(auto match : kptMatches)
     {
-        auto pt = kptsCurr[match.trainIdx].pt;
-        if(boundingBox.roi.contains(pt) && match.distance < avgDistance) 
+        
+        auto ptCurr = kptsCurr[match.trainIdx].pt;
+        auto ptPrev = kptsPrev[match.queryIdx].pt;
+        auto euclideanDistance = cv::norm(ptPrev - ptCurr); 
+         
+        //cout << medianDistnace << endl;
+        cout << "Euclidian Distance: " << euclideanDistance << "    Med Distance: " << medianDistnace << endl;
+        if(boundingBox.roi.contains(ptCurr) && euclideanDistance <  30 * medianDistnace) 
         {
             boundingBox.kptMatches.push_back(match);
+            count++;
         }
+        
     }
-
+    cout << kptMatches.size()  << " " << count << endl;
 
 
 }
